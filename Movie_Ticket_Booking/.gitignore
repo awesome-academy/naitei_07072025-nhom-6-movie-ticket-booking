@@ -1,33 +1,26 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-application.properties
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+# Build output and compiled files
+/target/
+*.class
 
-### IntelliJ IDEA ###
-.idea
-*.iws
+# Log files
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# IDE configuration files
+.idea/
 *.iml
-*.ipr
+*.iws
+.project
+.classpath
+.settings
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+# VS Code files
 .vscode/
+
+# Secret files
+application-secret.properties
+.env
