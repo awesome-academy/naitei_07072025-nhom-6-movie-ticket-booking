@@ -1,6 +1,7 @@
 package com.org.Movie_Ticket_Booking.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.org.Movie_Ticket_Booking.entity.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,7 +36,8 @@ public class Booking {
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
 
-    private Integer status;
+    @Column(nullable = false)
+    private BookingStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

@@ -1,5 +1,6 @@
 package com.org.Movie_Ticket_Booking.entity;
 
+import com.org.Movie_Ticket_Booking.entity.enums.PromotionUserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,7 @@ public class PromotionUser {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Integer status;
+    @Column(nullable = false)
+    private PromotionUserStatus status;
 }
 

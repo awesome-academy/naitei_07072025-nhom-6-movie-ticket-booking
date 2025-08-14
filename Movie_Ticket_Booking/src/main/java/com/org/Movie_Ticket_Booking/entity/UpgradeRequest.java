@@ -1,5 +1,6 @@
 package com.org.Movie_Ticket_Booking.entity;
 
+import com.org.Movie_Ticket_Booking.entity.enums.UpgradeRequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,8 +33,8 @@ public class UpgradeRequest {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(length = 50)
-    private Integer status;
+    @Column(nullable = false)
+    private UpgradeRequestStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
