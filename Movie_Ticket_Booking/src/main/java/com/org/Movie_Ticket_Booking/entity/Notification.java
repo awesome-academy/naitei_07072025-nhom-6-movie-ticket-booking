@@ -1,5 +1,6 @@
 package com.org.Movie_Ticket_Booking.entity;
 
+import com.org.Movie_Ticket_Booking.entity.enums.NotificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +27,8 @@ public class Notification {
     @Column(columnDefinition = "TEXT")
     private String message;
 
-    private Integer status;
+    @Column(nullable = false)
+    private NotificationStatus status;
 
     @Column(name = "send_time")
     private LocalDateTime sendTime;

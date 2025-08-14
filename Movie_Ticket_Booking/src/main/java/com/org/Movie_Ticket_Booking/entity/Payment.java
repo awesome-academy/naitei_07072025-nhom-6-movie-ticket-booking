@@ -1,5 +1,6 @@
 package com.org.Movie_Ticket_Booking.entity;
 
+import com.org.Movie_Ticket_Booking.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +34,7 @@ public class Payment {
     @Column(name = "payment_time")
     private LocalDateTime paymentTime;
 
-    private Integer status;
+    @Column(nullable = false)
+    private PaymentStatus status;
 }
 
