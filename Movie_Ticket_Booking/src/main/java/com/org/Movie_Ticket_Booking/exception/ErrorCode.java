@@ -32,7 +32,9 @@ public enum ErrorCode {
     INTERNAL_ERROR(30, "Lỗi hệ thống, vui lòng thử lại sau"),
     PERMISSION_DENIED(31, "Bạn không có quyền thực hiện thao tác này"),
     INVALID_PASSWORD(32, "Mật khẩu không hợp lệ"),
-    METHOD_NOTSUPPORT(33, "Không hỗ trợ http method cho endpoint này");
+    METHOD_NOTSUPPORT(33, "Không hỗ trợ http method cho endpoint này"),
+    INVALID_INPUT(34, "Dữ liệu nhập vào không hợp lệ"),
+    INVALID_CREDENTIALS(35, "Tên đăng nhập hoặc mật khẩu không đúng");
     private int code;
     private String massage;
 
