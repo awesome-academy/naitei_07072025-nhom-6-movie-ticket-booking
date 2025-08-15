@@ -1,0 +1,25 @@
+@font-face {
+    font-family: "bootstrap-icons";
+    src: url("../fonts/bootstrap-icons.woff2") format("woff2"),
+    url("../fonts/bootstrap-icons.woff") format("woff");
+}
+
+.bi {
+    display: inline-block;
+    font-family: "bootstrap-icons" !important;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    vertical-align: -0.125em;
+    text-align: center;
+    text-transform: none;
+    speak: none;
+}
+
+.bi::before {
+    display: inline-block;
+}
+
+.bi-person-bounding-box::before { content: "\f4d0"; }
+.bi-house::before { content: "\f425"; }
+.bi-gear::before { content: "\f3e5"; }
