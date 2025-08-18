@@ -30,8 +30,9 @@ public class Seat {
     private Room room;
 
     // Quan hệ tới TypeSeat
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "seat_type_id", nullable = false)
+    @JsonIgnore
     private TypeSeat typeSeat;
 
     // Quan hệ tới BookingSeat
