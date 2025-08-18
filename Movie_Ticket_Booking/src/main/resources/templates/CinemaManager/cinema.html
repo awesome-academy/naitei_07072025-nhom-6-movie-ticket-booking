@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Ticket Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { display: flex; flex-direction: column; min-height: 100vh; }
+        header { background-color: #0d6efd; color: white; padding: 1rem; text-align: center; }
+        main { flex: 1; padding: 2rem; }
+        footer { background-color: #f8f9fa; text-align: center; padding: 1rem; border-top: 1px solid #dee2e6; }
+        .card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>Movie Ticket Booking</h2>
+</header>
+
+<main class="container">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label for="citySelect" class="form-label fw-bold">Chọn thành phố:</label>
+            <select id="citySelect" class="form-select">
+                <option value="" selected disabled>-- Chọn thành phố --</option>
+                <option th:each="city : ${cities}"
+                        th:value="${city}"
+                        th:text="${city}"></option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="cinemaSelect" class="form-label fw-bold">Chọn rạp:</label>
+            <select id="cinemaSelect" class="form-select">
+                <option value="" selected disabled>-- Chọn rạp --</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row" id="roomsContainer"></div>
+
+</main>
+
+<footer>
+    <p>&copy; 2025 Movie Ticket Booking</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Thymeleaf render cityToCinemas thành JSON
+    const cityToCinemas = /*[[${cityToCinemas}]]*/ {};
+
+    const citySelect = document.getElementById("citySelect");
+    const cinemaSelect = document.getElementById("cinemaSelect");
+    const roomsContainer = document.getElementById("roomsContainer");
+
+    // Khi chọn thành phố, lọc rạp
+    citySelect.addEventListener("change", function () {
+        const selectedCity = this.value;
+
+        // reset dropdown rạp & rooms
+        cinemaSelect.innerHTML = '<option value="" selected disabled>-- Chọn rạp --</option>';
+        roomsContainer.innerHTML = '';
+
+        if (cityToCinemas[selectedCity]) {
+            // Lặp qua map: tên rạp -> ID rạp
+            for (const [cinemaName, cinemaId] of Object.entries(cityToCinemas[selectedCity])) {
+                const opt = document.createElement("option");
+                opt.value = cinemaId; // Lưu ID vào value
+                opt.textContent = cinemaName; // Hiển thị tên rạp
+                cinemaSelect.appendChild(opt);
+            }
+        }
+    });
+
+    // Khi chọn rạp, fetch danh sách phòng chiếu
+    cinemaSelect.addEventListener("change", function () {
+        const cinemaId = this.value;
+        if (!cinemaId) return;
+
+        roomsContainer.innerHTML = '';
+
+        fetch(`/cinema/rooms/${cinemaId}`)
+            .then(res => res.json())
+            .then(rooms => {
+                if (!rooms || rooms.length === 0) {
+                    roomsContainer.innerHTML = '<p class="text-muted">Chưa có phòng chiếu cho rạp này.</p>';
+                    return;
+                }
+
+                rooms.forEach(room => {
+                    const cardCol = document.createElement("div");
+                    cardCol.className = "col-md-4 mb-4";
+                    cardCol.innerHTML = `
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">${room.name}</h5>
+                                <p class="card-text">Số ghế: ${room.quantitySeats}</p>
+                            </div>
+                        </div>
+                    `;
+                    roomsContainer.appendChild(cardCol);
+                });
+            })
+            .catch(err => console.error("Lỗi fetch phòng chiếu:", err));
+    });
+    /*]]>*/
+</script>
+
+</body>
+</html>
