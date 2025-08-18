@@ -13,3 +13,12 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 
 spring.jpa.open-in-view=false
 spring.thymeleaf.cache=false
+
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=your_Email
+spring.mail.password= password ( use App password to get)
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+app.verification.base-url=http://localhost:8080/api/auth/verify?token=

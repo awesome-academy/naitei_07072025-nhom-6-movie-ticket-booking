@@ -4,6 +4,7 @@ import com.org.Movie_Ticket_Booking.dto.respone.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -52,5 +53,22 @@ public class GlobalExceptionHandler {
         apiResponse.setTimestamp(LocalDateTime.now().toString());
         return ResponseEntity.badRequest().body(apiResponse);
     }
-}
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse> handleValidationExceptions(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
+
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .findFirst()
+                .orElse(ErrorCode.REQUEST_INVALID.getMassage());
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(ErrorCode.REQUEST_INVALID.getCode());
+        apiResponse.setMessage(errorMessage);
+        apiResponse.setPath(request.getRequestURI());
+        apiResponse.setTimestamp(LocalDateTime.now().toString());
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+}
