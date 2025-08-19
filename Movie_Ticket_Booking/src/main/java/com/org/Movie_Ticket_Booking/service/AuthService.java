@@ -5,4 +5,5 @@ import com.org.Movie_Ticket_Booking.dto.respone.RegisterRespone;
 
 public interface AuthService {
     RegisterRespone register(UserRegister request);
+    void verifyAccount(String token);
 }

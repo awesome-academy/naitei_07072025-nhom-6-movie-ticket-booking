@@ -56,6 +56,21 @@ public class AuthServiceImpl implements AuthService {
         return userMapper.toRegisterRespone(user);
     }
 
+    @Override
+    public void verifyAccount(String token) {
+        User user = userRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new AppException(ErrorCode.AUTH_TOKEN_INVALID));
+
+        if (user.getVerificationExpiry().isBefore(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.AUTH_TOKEN_EXPIRED);
+        }
+
+        user.setIsVerified(true);
+        user.setVerificationToken(null);
+        user.setVerificationExpiry(null);
+        userRepository.save(user);
+    }
+
     private void validateDuplicate(User user, UserRegister request) {
         if (Boolean.TRUE.equals(user.getIsVerified())) {
             throw new AppException(
