@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8" />
-    <title th:text="${pageTitle} ?: 'Cinema Manager Dashboard'">Cinema Manager Dashboard</title>
+    <title th:text="${pageTitle} ?: #{dashboard.title}">Cinema Manager Dashboard</title>
     <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
     <link th:href="@{/bootstrap/css/bootstrap-icons.css}" rel="stylesheet"/>
     <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
     <link th:href="@{/css/dashboard_cinema.css}" rel="stylesheet"/>
 </head>
-<body>
 
+<body>
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 titlePage">Cinema Manager</a>
 </nav>
 
-<div class="container-fluid" style="padding-left: 0; padding-bottom: 0">
-    <div class="d-flex" style="margin: 0;">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
+<div class="container-fluid" style="padding-left: 0;">
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse"
              style="height:100vh; position:fixed; left:0; overflow-y:auto;">
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
@@ -24,7 +25,7 @@
                         <a class="nav-link"
                            th:classappend="${activePage == 'movies'} ? ' active'"
                            th:href="@{/manager/movies}">
-                            Danh sách phim
+                            <span th:text="#{menu.movies}">Danh sách phim</span>
                         </a>
                     </li>
 
@@ -32,7 +33,7 @@
                         <a class="nav-link"
                            th:classappend="${activePage == 'my_movies'} ? ' active'"
                            th:href="@{/manager/my-movies}">
-                            Phim của rạp
+                            <span th:text="#{menu.myMovies}">Phim của rạp</span>
                         </a>
                     </li>
 
@@ -40,7 +41,7 @@
                         <a class="nav-link"
                            th:classappend="${activePage == 'rooms'} ? ' active'"
                            th:href="@{/manager/rooms}">
-                            Quản lý rạp chiếu
+                            <span th:text="#{menu.rooms}">Quản lý rạp chiếu</span>
                         </a>
                     </li>
 
@@ -48,7 +49,7 @@
                         <a class="nav-link"
                            th:classappend="${activePage == 'statistics'} ? ' active'"
                            th:href="@{/manager/statistics}">
-                            Thống kê & báo cáo
+                            <span th:text="#{menu.statistics}">Thống kê & báo cáo</span>
                         </a>
                     </li>
 
@@ -56,15 +57,18 @@
                         <a class="nav-link"
                            th:classappend="${activePage == 'support'} ? ' active'"
                            th:href="@{/manager/support}">
-                            Liên hệ & hỗ trợ
+                            <span th:text="#{menu.support}">Liên hệ & hỗ trợ</span>
                         </a>
                     </li>
                 </ul>
             </div>
         </nav>
 
+        <!-- Content -->
         <div style="margin-left: 18%; margin-top: 32px;">
-            <main class="flex-grow-1 ms-sm-auto px-md-4" th:replace="${content}"></main>
+            <main class="flex-grow-1 ms-sm-auto px-md-4"
+                  th:replace="${content}">
+            </main>
         </div>
     </div>
 </div>

@@ -32,13 +32,17 @@ public enum ErrorCode {
     INTERNAL_ERROR(30, "Lỗi hệ thống, vui lòng thử lại sau"),
     PERMISSION_DENIED(31, "Bạn không có quyền thực hiện thao tác này"),
     INVALID_PASSWORD(32, "Mật khẩu không hợp lệ"),
-    METHOD_NOTSUPPORT(33, "Không hỗ trợ http method cho endpoint này");
-    private int code;
-    private String massage;
+    METHOD_NOTSUPPORT(33, "Không hỗ trợ http method cho endpoint này"),
+    // === THAY ĐỔI: Thêm mã lỗi mới ===
+    CINEMA_NOT_FOUND(34, "Không tìm thấy rạp phim");
 
-    ErrorCode(int code, String massage) {
+    private int code;
+    // === THAY ĐỔI: Sửa lỗi chính tả ===
+    private String message;
+
+    ErrorCode(int code, String message) {
         this.code = code;
-        this.massage = massage;
+        this.message = message;
     }
 
     public int getCode() {
@@ -49,11 +53,13 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    public String getMassage() {
-        return massage;
+    // === THAY ĐỔI: Sửa lỗi chính tả ===
+    public String getMessage() {
+        return message;
     }
 
-    public void setMassage(String massage) {
-        this.massage = massage;
+    // === THAY ĐỔI: Sửa lỗi chính tả ===
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
