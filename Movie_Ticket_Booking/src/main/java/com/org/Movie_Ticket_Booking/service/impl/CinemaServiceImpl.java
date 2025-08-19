@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CinemaServiceImpl implements CinemaService {
@@ -26,5 +27,10 @@ public class CinemaServiceImpl implements CinemaService {
     @Override
     public List<Cinema> findAll(){
         return this.cinemaRepository.findAll();
+    }
+
+    @Override
+    public Optional<Cinema> findById(Long id) {
+        return this.cinemaRepository.findById(id);
     }
 }

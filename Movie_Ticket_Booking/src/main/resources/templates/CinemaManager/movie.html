@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Ticket Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { display: flex; flex-direction: column; min-height: 100vh; }
+        header { background-color: #0d6efd; color: white; padding: 1rem; text-align: center; }
+        main { flex: 1; padding: 2rem; }
+        footer { background-color: #f8f9fa; text-align: center; padding: 1rem; border-top: 1px solid #dee2e6; }
+        .card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .movie-poster {
+            height: 300px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>Movie Ticket Booking</h2>
+</header>
+
+<main class="container">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label for="citySelect" class="form-label fw-bold">Chọn thành phố:</label>
+            <select id="citySelect" class="form-select">
+                <option value="" selected disabled>-- Chọn thành phố --</option>
+                <option th:each="city : ${cities}"
+                        th:value="${city}"
+                        th:text="${city}"></option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="cinemaSelect" class="form-label fw-bold">Chọn rạp:</label>
+            <select id="cinemaSelect" class="form-select">
+                <option value="" selected disabled>-- Chọn rạp --</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row" id="moviesContainer"></div>
+
+</main>
+
+<footer>
+    <p>&copy; 2025 Movie Ticket Booking</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Thymeleaf render cityToCinemas thành JSON
+    const cityToCinemas = /*[[${cityToCinemas}]]*/ {};
+
+    const citySelect = document.getElementById("citySelect");
+    const cinemaSelect = document.getElementById("cinemaSelect");
+    const moviesContainer = document.getElementById("moviesContainer");
+
+    // Khi chọn thành phố, lọc rạp
+    citySelect.addEventListener("change", function () {
+        const selectedCity = this.value;
+
+        // reset dropdown rạp & movies
+        cinemaSelect.innerHTML = '<option value="" selected disabled>-- Chọn rạp --</option>';
+        moviesContainer.innerHTML = '';
+
+        if (cityToCinemas[selectedCity]) {
+            // Lặp qua map: tên rạp -> ID rạp
+            for (const [cinemaName, cinemaId] of Object.entries(cityToCinemas[selectedCity])) {
+                const opt = document.createElement("option");
+                opt.value = cinemaId; // Lưu ID vào value
+                opt.textContent = cinemaName; // Hiển thị tên rạp
+                cinemaSelect.appendChild(opt);
+            }
+        }
+    });
+
+    // Khi chọn rạp, fetch danh sách phim
+    cinemaSelect.addEventListener("change", function () {
+        const cinemaId = this.value;
+        if (!cinemaId) return;
+
+        moviesContainer.innerHTML = '';
+
+        fetch(`/movie/movies/cinema/${cinemaId}`)
+            .then(res => res.json())
+            .then(movies => {
+                if (!movies || movies.length === 0) {
+                    moviesContainer.innerHTML = '<p class="text-muted">Chưa có phim nào trong rạp này.</p>';
+                    return;
+                }
+
+                movies.forEach(movie => {
+                    const cardCol = document.createElement("div");
+                    cardCol.className = "col-md-4 mb-4";
+                    cardCol.innerHTML = `
+                        <div class="card h-100" style="cursor:pointer;" onclick="window.location.href='/movie/movies/${movie.id}?cinemaId=${cinemaId}'">
+                            <img src="${movie.posterUrl}" class="card-img-top movie-poster" alt="${movie.title}">
+                            <div class="card-body">
+                                <h5 class="card-title">${movie.title}</h5>
+                                <p class="card-text">${movie.description ? movie.description.substring(0, 100) + '...' : ''}</p>
+                                <p><strong>Thời lượng:</strong> ${movie.duration} phút</p>
+                                <p><strong>Ngôn ngữ:</strong> ${movie.language}</p>
+                            </div>
+                        </div>
+                    `;
+                    moviesContainer.appendChild(cardCol);
+                });
+            })
+            .catch(err => console.error("Lỗi fetch phim:", err));
+    });
+    /*]]>*/
+</script>
+
+</body>
+</html>
