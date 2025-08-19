@@ -27,16 +27,16 @@
                                     <h4 class="mt-1 mb-5 pb-1">Movie Ticket Booking</h4>
                                 </div>
 
-                                <form th:action="@{/login}" method="post">
+                                <form th:action="@{/authenticateTheUser}" method="post">
 
                                     <div data-mdb-input-init class="form-outline mb-4">
-                                        <input type="text" id="username" name="username" class="form-control"
-                                               placeholder="Phone number or email address" required />
+                                        <input type="text" id="username" name="email" class="form-control"
+                                               placeholder="Phone number or email address" required/>
                                         <label class="form-label" for="username">Username</label>
                                     </div>
 
                                     <div data-mdb-input-init class="form-outline mb-4">
-                                        <input type="password" id="password" name="password" class="form-control" placeholder=" " required />
+                                        <input type="password" id="password" name="password" class="form-control" placeholder=" " required/>
                                         <label class="form-label" for="password">Password</label>
                                     </div>
 

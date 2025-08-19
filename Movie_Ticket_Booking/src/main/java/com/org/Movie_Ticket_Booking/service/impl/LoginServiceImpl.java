@@ -9,7 +9,7 @@ import com.org.Movie_Ticket_Booking.exception.ErrorCode;
 import com.org.Movie_Ticket_Booking.repository.UserRepository;
 import com.org.Movie_Ticket_Booking.service.LoginService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class LoginServiceImpl implements LoginService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public LoginResponse login(LoginRequest request) {
