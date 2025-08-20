@@ -35,5 +35,7 @@ public class Review {
 
     @Column(name = "review_date")
     private LocalDateTime reviewDate;
-}
 
+    @Column(name = "is_display")
+    private Integer isDisplay;
+}
