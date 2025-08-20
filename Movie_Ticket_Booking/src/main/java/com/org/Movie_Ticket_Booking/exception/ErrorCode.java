@@ -34,7 +34,17 @@ public enum ErrorCode {
     INVALID_PASSWORD(32, "Mật khẩu không hợp lệ"),
     METHOD_NOTSUPPORT(33, "Không hỗ trợ http method cho endpoint này"),
     INVALID_INPUT(34, "Dữ liệu nhập vào không hợp lệ"),
-    INVALID_CREDENTIALS(35, "Tên đăng nhập hoặc mật khẩu không đúng");
+    INVALID_CREDENTIALS(35, "Tên đăng nhập hoặc mật khẩu không đúng"),
+    FILE_ERROR (36,"Lỗi khi đọc file"),
+    FILE_INVALID(37,"Định dạng file không hợp lệ"),
+    BUSINESS_ERROR(38, "Lỗi nghiệp vụ"),
+    FILE_UPLOAD_FAILED(39, "Upload file thất bại. Vui lòng thử lại."),
+    INVALID_DATA(40, "Dữ liệu không hợp lệ"),
+    MISSING_DATA_COLUMN(41, "Thiếu dữ liệu tại cột"),
+    MOVIE_TITLE_NULL(42, "Tiêu đề phim bị trống"),
+    DATE_INVALID(43, "Ngày sai định dạng "),
+    DURATION_INVALID(44, "Thời lượng phải là số nguyên ");
+
     private int code;
     private String massage;
 

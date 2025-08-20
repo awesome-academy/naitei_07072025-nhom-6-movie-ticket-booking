@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{import.confirm.title}">Xác nhận Import Phim</title>
+</head>
+<body>
+<h2 th:text="#{import.duplicate.heading}">Danh sách phim bị trùng</h2>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th th:text="#{movie.title}">Title</th>
+        <th th:text="#{movie.releaseDate}">Release Date</th>
+        <th th:text="#{movie.language}">Language</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="movie : ${duplicates}">
+        <td th:text="${movie.title}"></td>
+        <td th:text="${movie.releaseDate}"></td>
+        <td th:text="${movie.language}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<form th:action="@{/admin/movies/import/submit}" method="post">
+    <button type="submit" name="overwrite" value="true" th:text="#{import.overwriteAll}">Overwrite tất cả</button>
+    <button type="submit" name="overwrite" value="false" th:text="#{import.saveNewOnly}">Chỉ lưu phim mới</button>
+</form>
+
+<form th:action="@{/admin/movies/import/cancel}" method="post">
+    <button type="submit" th:text="#{import.cancel}">Cancel Import</button>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{error.title}">Lỗi hệ thống</title>
+</head>
+<body>
+<div class="error-container">
+    <div class="error-title" th:text="#{error.heading}">Đã xảy ra lỗi</div>
+    <div class="error-message" th:text="${message}">Thông báo lỗi</div>
+    <div class="error-path" th:text="#{error.path} + ': ' + ${path}">Đường dẫn: /path</div>
+    <a class="back-link" th:href="@{/admin/dashboard}" th:text="#{error.backLink}">Quay lại trang quản trị</a>
+</div>
+</body>
+</html>

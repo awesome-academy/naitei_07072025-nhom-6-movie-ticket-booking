@@ -14,4 +14,5 @@ public final class ViewNames {
     public static final String CONTENT_SUPPORT = "Admin/support";
     public static final String CONTENT_ACCOUNT = "Admin/account";
     public static final String CONTENT_DASHBOARD = "Admin/dashboard";
+    public static final String CONFIRM_IMPORT_MOVIE = "Admin/movies/confirm-import";
 }
