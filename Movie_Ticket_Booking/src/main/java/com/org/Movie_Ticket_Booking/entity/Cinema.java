@@ -34,8 +34,9 @@ public class Cinema {
     private String mapUrl;
 
     // Quan hệ tới Cinema Manger
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "manager_id", nullable = false)
+    @JsonIgnore
     private User manager;
 
     // Many-to-Many với Movie
