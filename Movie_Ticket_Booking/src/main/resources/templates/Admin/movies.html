@@ -1,3 +1,7 @@
 <div th:fragment="content">
     <h1>Danh sách phim</h1>
+    <form th:action="@{/admin/movies}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" class="form-control mb-2" required>
+        <button type="submit" class="btn btn-primary">Upload & Import</button>
+    </form>
 </div>
