@@ -43,14 +43,15 @@ public enum ErrorCode {
     MISSING_DATA_COLUMN(41, "Thiếu dữ liệu tại cột"),
     MOVIE_TITLE_NULL(42, "Tiêu đề phim bị trống"),
     DATE_INVALID(43, "Ngày sai định dạng "),
-    DURATION_INVALID(44, "Thời lượng phải là số nguyên ");
+    DURATION_INVALID(44, "Thời lượng phải là số nguyên "),
+    INVALID_KEY(45, "ID không hợp lệ hoặc không tồn tại"); // Thêm mã lỗi còn thiếu vào đây
 
     private int code;
-    private String massage;
+    private String message;
 
-    ErrorCode(int code, String massage) {
+    ErrorCode(int code, String message) {
         this.code = code;
-        this.massage = massage;
+        this.message = message;
     }
 
     public int getCode() {
@@ -61,11 +62,11 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    public String getMassage() {
-        return massage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMassage(String massage) {
-        this.massage = massage;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

@@ -2,7 +2,6 @@ package com.org.Movie_Ticket_Booking.exception;
 
 import com.org.Movie_Ticket_Booking.dto.respone.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,9 +40,9 @@ public class GlobalExceptionHandler {
     public Object handleAppException(AppException e, HttpServletRequest request){
         ErrorCode errorCode = e.getErrorCode();
         if (isApiRequest(request)) {
-            return buildApiResponse(errorCode.getCode(), errorCode.getMassage(), request.getRequestURI());
+            return buildApiResponse(errorCode.getCode(), errorCode.getMessage(), request.getRequestURI());
         } else {
-            return buildViewResponse("error", errorCode.getMassage(), request.getRequestURI());
+            return buildViewResponse("error", errorCode.getMessage(), request.getRequestURI());
         }
     }
 
@@ -51,10 +50,10 @@ public class GlobalExceptionHandler {
     public Object handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         if (isApiRequest(request)) {
             return buildApiResponse(ErrorCode.WRONG_DATATYPE.getCode(),
-                    ErrorCode.WRONG_DATATYPE.getMassage(),
+                    ErrorCode.WRONG_DATATYPE.getMessage(),
                     request.getRequestURI());
         } else {
-            return buildViewResponse("error", ErrorCode.WRONG_DATATYPE.getMassage(), request.getRequestURI());
+            return buildViewResponse("error", ErrorCode.WRONG_DATATYPE.getMessage(), request.getRequestURI());
         }
     }
 
@@ -62,10 +61,10 @@ public class GlobalExceptionHandler {
     public Object handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         if (isApiRequest(request)) {
             return buildApiResponse(ErrorCode.METHOD_NOTSUPPORT.getCode(),
-                    ErrorCode.METHOD_NOTSUPPORT.getMassage(),
+                    ErrorCode.METHOD_NOTSUPPORT.getMessage(),
                     request.getRequestURI());
         } else {
-            return buildViewResponse("error", ErrorCode.METHOD_NOTSUPPORT.getMassage(), request.getRequestURI());
+            return buildViewResponse("error", ErrorCode.METHOD_NOTSUPPORT.getMessage(), request.getRequestURI());
         }
     }
 
@@ -73,10 +72,10 @@ public class GlobalExceptionHandler {
     public Object fallback(Exception e, HttpServletRequest request){
         if (isApiRequest(request)) {
             return buildApiResponse(ErrorCode.UNIDENTIFIED_ERROR.getCode(),
-                    ErrorCode.UNIDENTIFIED_ERROR.getMassage(),
+                    ErrorCode.UNIDENTIFIED_ERROR.getMessage(),
                     request.getRequestURI());
         } else {
-            return buildViewResponse("error", ErrorCode.UNIDENTIFIED_ERROR.getMassage(), request.getRequestURI());
+            return buildViewResponse("error", ErrorCode.UNIDENTIFIED_ERROR.getMessage(), request.getRequestURI());
         }
     }
 
@@ -88,7 +87,7 @@ public class GlobalExceptionHandler {
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .findFirst()
-                .orElse(ErrorCode.REQUEST_INVALID.getMassage());
+                .orElse(ErrorCode.REQUEST_INVALID.getMessage());
 
         if (isApiRequest(request)) {
             return buildApiResponse(ErrorCode.REQUEST_INVALID.getCode(), errorMessage, request.getRequestURI());
@@ -100,9 +99,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IOException.class)
     public Object handleIOException(IOException ex, HttpServletRequest request) {
         if (isApiRequest(request)) {
-            return buildApiResponse(ErrorCode.FILE_ERROR.getCode(), ErrorCode.FILE_ERROR.getMassage(), request.getRequestURI());
+            return buildApiResponse(ErrorCode.FILE_ERROR.getCode(), ErrorCode.FILE_ERROR.getMessage(), request.getRequestURI());
         } else {
-            return buildViewResponse("error", ErrorCode.FILE_ERROR.getMassage(), request.getRequestURI());
+            return buildViewResponse("error", ErrorCode.FILE_ERROR.getMessage(), request.getRequestURI());
         }
     }
 
@@ -110,11 +109,11 @@ public class GlobalExceptionHandler {
     public Object handleMultipartException(org.springframework.web.multipart.MultipartException ex, HttpServletRequest request) {
         if (isApiRequest(request)) {
             return buildApiResponse(ErrorCode.FILE_UPLOAD_FAILED.getCode(),
-                    ErrorCode.FILE_UPLOAD_FAILED.getMassage(),
+                    ErrorCode.FILE_UPLOAD_FAILED.getMessage(),
                     request.getRequestURI());
         } else {
             return buildViewResponse("error",
-                    ErrorCode.FILE_UPLOAD_FAILED.getMassage(),
+                    ErrorCode.FILE_UPLOAD_FAILED.getMessage(),
                     request.getRequestURI());
         }
     }
