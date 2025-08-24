@@ -1,22 +1,28 @@
 package com.org.Movie_Ticket_Booking.config;
 
+import com.org.Movie_Ticket_Booking.constants.RoleConstants;
 import com.org.Movie_Ticket_Booking.exception.AppException;
 import com.org.Movie_Ticket_Booking.exception.ErrorCode;
 import com.org.Movie_Ticket_Booking.repository.UserRepository;
+import com.org.Movie_Ticket_Booking.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @PropertySource("classpath:endpointUrl.properties")
+@RequiredArgsConstructor
 public class SecurityConfig {
     @Value("${loginUrl}")
     private String loginUrl;
@@ -26,6 +32,8 @@ public class SecurityConfig {
 
     @Value("${dashboard}")
     private String dashboard;
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -44,14 +52,32 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/api/**")
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/customer/**").hasRole(RoleConstants.ROLE_CUSTOMER)
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/bootstrap/**").permitAll()
                         .requestMatchers("/movies/**", "/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/manager/**").hasRole("CINEMA_MANAGER")
-                        .requestMatchers("/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers("/admin/**").hasRole(RoleConstants.ROLE_ADMIN)
+                        .requestMatchers("/manager/**").hasRole(RoleConstants.ROLE_CINEMA_MANAGER)
+                        .requestMatchers("/customer/**").hasRole(RoleConstants.ROLE_CUSTOMER)
                         .anyRequest().authenticated()
                 )
                 .formLogin(
