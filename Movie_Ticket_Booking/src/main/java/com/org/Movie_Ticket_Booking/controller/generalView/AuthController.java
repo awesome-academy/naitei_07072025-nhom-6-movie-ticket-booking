@@ -1,5 +1,6 @@
 package com.org.Movie_Ticket_Booking.controller.generalView;
 
+import com.org.Movie_Ticket_Booking.constants.RoleConstants;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class AuthController {
 
         var authorities = authentication.getAuthorities();
 
-        if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+        if (authorities.stream().anyMatch(a -> a.getAuthority().equals(RoleConstants.ROLE_ADMIN))) {
             return "redirect:/admin/dashboard";
         }
 

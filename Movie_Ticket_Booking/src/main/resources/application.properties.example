@@ -25,3 +25,7 @@ app.verification.base-url=http://localhost:8080/api/auth/verify?token=
 
 spring.messages.basename=messages
 spring.messages.encoding=UTF-8
+
+jwt.secret=yourSecretKey
+jwt.access.expiration=3600000
+jwt.refresh.expiration=604800000
