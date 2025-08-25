@@ -7,12 +7,12 @@ import com.org.Movie_Ticket_Booking.exception.AppException;
 import com.org.Movie_Ticket_Booking.exception.ErrorCode;
 import com.org.Movie_Ticket_Booking.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
@@ -36,5 +36,15 @@ public class RoomController extends ManagerController{
 
         model.addAttribute("content", ViewNames.MANAGER_SEATS);
         return ViewNames.LAYOUT_MANAGER;
+    }
+
+    @PostMapping("/import")
+    public String importRoom(@RequestParam("file") MultipartFile file) {
+        try {
+            roomService.saveExcelData(file);
+            return "redirect:/manager/cinema";
+        } catch (Exception e) {
+            return "redirect:/manager/cinema";
+        }
     }
 }
