@@ -9,13 +9,13 @@ import lombok.Setter;
 @Setter
 public class LoginRequest {
 
-    @NotBlank(message = "Email hoặc số điện thoại không được để trống")
+    @NotBlank(message = "{validation.username.notblank}")
     @Pattern(
             regexp = "^(?:[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}|[0-9]{10})$",
-            message = "Email hoặc số điện thoại không hợp lệ"
+            message = "{validation.username.invalid}"
     )
     private String username;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
+    @NotBlank(message = "{validation.password.notblank}")
     private String password;
 }

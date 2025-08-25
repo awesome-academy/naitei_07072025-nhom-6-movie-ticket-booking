@@ -10,6 +10,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginResponse {
+    private String accessToken;
+    private String refreshToken;
     private Long id;
     private String name;
     private String email;
