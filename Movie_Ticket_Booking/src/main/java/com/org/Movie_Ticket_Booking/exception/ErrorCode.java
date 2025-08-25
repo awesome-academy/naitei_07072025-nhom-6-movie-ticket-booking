@@ -46,14 +46,15 @@ public enum ErrorCode {
     DURATION_INVALID(44, "Thời lượng phải là số nguyên "),
     UPGRADE_EXISTING_PENDING(45, "Bạn đã gửi yêu cầu này và đang chờ duyệt"),
     UPGRADE_APPROVED(46, "Rạp này của bạn đã được phê duyệt, không thể gửi thêm"),
-    UPGRADE_EXISTING(47, "Rạp này đã được đăng kí, vui lòng điền thông tin khác");
+    UPGRADE_EXISTING(47, "Rạp này đã được đăng kí, vui lòng điền thông tin khác"),
+    INVALID_KEY(48, "ID không hợp lệ hoặc không tồn tại");
 
     private int code;
-    private String massage;
+    private String message;
 
-    ErrorCode(int code, String massage) {
+    ErrorCode(int code, String message) {
         this.code = code;
-        this.massage = massage;
+        this.message = message;
     }
 
     public int getCode() {
@@ -64,11 +65,11 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    public String getMassage() {
-        return massage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMassage(String massage) {
-        this.massage = massage;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
