@@ -54,4 +54,3 @@ public class Showtime {
     private Set<Booking> bookings;
 
 }
-
