@@ -1,22 +1,75 @@
-<div th:fragment="content">
-    <h2>Quản lý Rạp</h2>
-        <div class="row mb-4">
-            <div>
-                <label for="cinemaSelect" class="form-label fw-bold">Chọn rạp bạn quản lý:</label>
-                <select id="cinemaSelect" class="form-select">
-                    <option value="" selected disabled>-- Chọn rạp --</option>
-                    <option th:each="cinema : ${cinemas}"
-                            th:value="${cinema.id}"
-                            th:text="${cinema.name}">
-                    </option>
-                </select>
-            </div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{menu.manager.cinemas}">Quản lý Rạp</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        main {
+            flex: 1;
+            padding: 2rem;
+        }
+        footer {
+            background-color: #f8f9fa;
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h2 th:text="#{menu.manager.cinemas}">Quản lý Rạp</h2>
+</header>
+
+<main class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label for="cinemaSelect" class="form-label fw-bold" th:text="#{menu.manager.listCinemas}">Chọn rạp bạn quản lý:</label>
+            <select id="cinemaSelect" class="form-select">
+                <option value="" selected disabled th:text="#{menu.manager.selectCinema}">-- Chọn rạp --</option>
+                <option th:each="cinema : ${cinemas}"
+                        th:value="${cinema.id}"
+                        th:text="${cinema.name}">
+                </option>
+            </select>
+        </div>
+    </div>
+    <form th:action="@{/api/room/import}" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="file" class="form-label" th:text="#{menu.manager.selectFile}">Chọn file:</label>
+            <input type="file" class="form-control" id="file" name="file" required>
         </div>
 
-        <div class="row" id="roomsContainer"></div>
+        <button type="submit" class="btn btn-primary">Import</button>
+    </form>
 
-<script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <div class="row" id="roomsContainer"></div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Movie Ticket Booking</p>
+</footer>
+
+<script src="bootstrap/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
+    /*<![CDATA[*/
         const cinemaSelect = document.getElementById("cinemaSelect");
         const roomsContainer = document.getElementById("roomsContainer");
 
@@ -27,7 +80,7 @@
 
             roomsContainer.innerHTML = '';
 
-            fetch(`/cinema/${cinemaId}/rooms`)
+            fetch(`/manager/${cinemaId}/rooms`)
                 .then(res => res.json())
                 .then(rooms => {
                     if (!rooms || rooms.length === 0) {
@@ -38,7 +91,7 @@
                         const cardCol = document.createElement("div");
                         cardCol.className = "col-md-4 mb-4";
                         cardCol.innerHTML = `
-                            <div class="card h-100" style="cursor:pointer;" onclick="window.location.href='/room/${room.id}/seats'">
+                            <div class="card h-100" style="cursor:pointer;" onclick="window.location.href='/rooms/${room.id}/seats'">
                                 <div class="card-body">
                                     <h5 class="card-title">${room.name}</h5>
                                     <p class="card-text">Số ghế: ${room.quantitySeats}</p>
@@ -51,4 +104,5 @@
         });
     /*]]>*/
 </script>
-</div>
+</body>
+</html>
