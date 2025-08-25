@@ -56,6 +56,14 @@ public class SecurityConfig {
                 )
                 .formLogin(
                         form->form.loginPage(loginUrl).usernameParameter("email").passwordParameter("password").loginProcessingUrl("/authenticateTheUser").permitAll().defaultSuccessUrl(dashboard, true)
+                                .failureHandler((request, response, exception) -> {
+                                    if (exception.getCause() instanceof AppException appEx &&
+                                            appEx.getErrorCode() == ErrorCode.USER_NOT_FOUND) {
+                                        response.sendRedirect("/login?notfound=true");
+                                    } else {
+                                        response.sendRedirect("/login?error=true");
+                                    }
+                                })
                 ).logout(logout -> logout
                         .logoutUrl(loginUrl)
                         .logoutSuccessUrl(dashboard)
