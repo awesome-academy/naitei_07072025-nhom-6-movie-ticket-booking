@@ -1,6 +1,7 @@
 package com.org.Movie_Ticket_Booking.service.impl;
 
 import com.org.Movie_Ticket_Booking.dto.request.BookingRequest;
+import com.org.Movie_Ticket_Booking.dto.respone.BookingHistory;
 import com.org.Movie_Ticket_Booking.dto.respone.BookingResponse;
 import com.org.Movie_Ticket_Booking.entity.*;
 import com.org.Movie_Ticket_Booking.entity.enums.BookingStatus;
@@ -15,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -126,5 +129,23 @@ public class BookingServiceImpl implements BookingService {
                 .showtimeInfo("Start time: " +booking.getShowtime().getStartTime()+"  End time: "+booking.getShowtime().getEndTime())
                 .build();
         return bookingResponse;
+    }
+
+    @Override
+    public List<BookingHistory> findBookingByUserId(Long id) {
+        List<BookingHistory> bookingHistoryList = new ArrayList<>();
+        List<Booking> bookings= this.bookingRepository.findByUserId(id);
+        for (Booking b : bookings) {
+            bookingHistoryList.add(
+                    BookingHistory.builder()
+                            .id(b.getId())
+                            .createdAt(b.getCreatedAt())
+                            .bookingStatus(b.getStatus())
+                            .startTime(b.getShowtime().getStartTime())
+                            .movie_name(b.getShowtime().getMovie().getTitle())
+                            .build()
+            );
+        }
+        return bookingHistoryList;
     }
 }
