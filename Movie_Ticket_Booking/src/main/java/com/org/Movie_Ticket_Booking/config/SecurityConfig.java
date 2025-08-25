@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/manager/**").hasRole("CINEMA_MANAGER")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(

@@ -2,6 +2,8 @@ package com.org.Movie_Ticket_Booking.service.impl;
 
 import com.org.Movie_Ticket_Booking.dto.request.MovieRequest;
 import com.org.Movie_Ticket_Booking.dto.respone.MovieResponse;
+import com.org.Movie_Ticket_Booking.dto.respone.MovieListItemResponse;
+import com.org.Movie_Ticket_Booking.dto.respone.PagedMoviesResponse;
 import com.org.Movie_Ticket_Booking.entity.Genre;
 import com.org.Movie_Ticket_Booking.entity.Movie;
 import com.org.Movie_Ticket_Booking.exception.AppException;
@@ -13,11 +15,15 @@ import com.org.Movie_Ticket_Booking.service.MovieService;
 import com.org.Movie_Ticket_Booking.utils.FileReader;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,23 +46,20 @@ public class MovieServiceImpl implements MovieService {
         List<MovieResponse> duplicates = new ArrayList<>();
         List<Movie> duplicatesEntities = new ArrayList<>();
 
-        for (int i = 1; i < rows.size(); i++){
+        for (int i = 1; i < rows.size(); i++) {
             List<String> row = rows.get(i);
-            System.out.println(rows);
-
-            if(row.isEmpty()) continue;
+            if (row.isEmpty()) continue;
 
             Movie movie = buildMovieFromRow(row);
 
             Optional<Movie> existing = movieRepository.findByTitleAndReleaseDate(movie.getTitle(), movie.getReleaseDate());
 
-            if(existing.isPresent()){
-                duplicates.add(movieMapper.toMovieRespone(existing.get())); // is duplicated
-                //assign old ID to new version -> when save will update
-                movie.setId(existing.get().getId());
+            if (existing.isPresent()) {
+                duplicates.add(movieMapper.toMovieRespone(existing.get()));
+                movie.setId(existing.get().getId()); // assign old ID để update
                 duplicatesEntities.add(movie);
-            }else {
-                newMovies.add(movie); //record isn't duplicated
+            } else {
+                newMovies.add(movie);
             }
         }
         session.setAttribute("newMovies", newMovies);
@@ -125,19 +128,17 @@ public class MovieServiceImpl implements MovieService {
             throw new AppException(ErrorCode.DURATION_INVALID);
         }
 
-        MovieRequest request = MovieRequest.builder()
+        LocalDate releaseDate = LocalDate.parse(releaseDateStr);
+
+        return Movie.builder()
                 .title(title)
                 .description(description)
-                .releaseDate(releaseDateStr)
+                .releaseDate(releaseDate)
                 .duration(Integer.parseInt(durationStr))
                 .posterUrl(posterUrl)
                 .language(language)
-                .genres(genres)
+                .genres(resolveGenres(genres))
                 .build();
-
-        Movie movie = movieMapper.toEntity(request);
-        movie.setGenres(resolveGenres(genres));
-        return movie;
     }
 
     private boolean isValidDate(String dateStr) {
@@ -148,13 +149,105 @@ public class MovieServiceImpl implements MovieService {
         return str != null && str.matches("\\d+");
     }
 
-    @SuppressWarnings("unchecked")
-    private List<Movie> getSessionList(HttpSession session, String attrName) {
-        return (List<Movie>) session.getAttribute(attrName);
-    }
-
     private void clearImportSession(HttpSession session) {
         session.removeAttribute("newMovies");
         session.removeAttribute("duplicateMovies");
+    }
+
+    // Search movie
+    @Override
+    public PagedMoviesResponse searchMovies(
+            String title,
+            List<String> genres,
+            String dateFrom,
+            String dateTo,
+            String startTime,
+            String endTime,
+            String language,
+            int page,
+            int size
+    ) {
+        Specification<Movie> spec = Specification.allOf();
+
+        // Fuzzy search theo title
+        if (title != null && !title.isBlank()) {
+            String like = "%" + title.trim().toLowerCase() + "%";
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("title")), like)
+            );
+        }
+
+        // Filter theo ngôn ngữ
+        if (language != null && !language.isBlank()) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(cb.lower(root.get("language")), language.trim().toLowerCase())
+            );
+        }
+
+        // Filter theo genre (multi-select)
+        if (genres != null && !genres.isEmpty()) {
+            spec = spec.and((root, query, cb) -> {
+                var join = root.join("genres");
+                List<String> lowered = genres.stream()
+                        .filter(s -> s != null && !s.isBlank())
+                        .map(s -> s.trim().toLowerCase())
+                        .toList();
+                query.distinct(true);
+                return cb.lower(join.get("name")).in(lowered);
+            });
+        }
+
+        // Filter theo khoảng ngày chiếu (dateFrom - dateTo)
+        if ((dateFrom != null && !dateFrom.isBlank()) || (dateTo != null && !dateTo.isBlank())) {
+            LocalDate from = (dateFrom == null || dateFrom.isBlank()) ? null : LocalDate.parse(dateFrom);
+            LocalDate to = (dateTo == null || dateTo.isBlank()) ? null : LocalDate.parse(dateTo);
+
+            spec = spec.and((root, query, cb) -> {
+                var stJoin = root.join("showtimes");
+                query.distinct(true);
+                if (from != null && to != null) {
+                    return cb.between(stJoin.get("date"), from, to);
+                } else if (from != null) {
+                    return cb.greaterThanOrEqualTo(stJoin.get("date"), from);
+                } else {
+                    return cb.lessThanOrEqualTo(stJoin.get("date"), to);
+                }
+            });
+        }
+
+        //  Filter theo giờ chiếu (startTime - endTime)
+        if ((startTime != null && !startTime.isBlank()) || (endTime != null && !endTime.isBlank())) {
+            LocalTime start = (startTime == null || startTime.isBlank()) ? null : LocalTime.parse(startTime);
+            LocalTime end = (endTime == null || endTime.isBlank()) ? null : LocalTime.parse(endTime);
+
+            spec = spec.and((root, query, cb) -> {
+                var stJoin = root.join("showtimes");
+                query.distinct(true);
+                if (start != null && end != null) {
+                    return cb.between(stJoin.get("startTime"), start, end);
+                } else if (start != null) {
+                    return cb.greaterThanOrEqualTo(stJoin.get("startTime"), start);
+                } else {
+                    return cb.lessThanOrEqualTo(stJoin.get("startTime"), end);
+                }
+            });
+        }
+
+        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1),
+                Sort.by(Sort.Direction.DESC, "releaseDate"));
+
+        Page<Movie> result = movieRepository.findAll(spec, pageable);
+
+        List<MovieListItemResponse> items = result.getContent().stream()
+                .map(movieMapper::toListItem)
+                .toList();
+
+        return PagedMoviesResponse.builder()
+                .items(items)
+                .total(result.getTotalElements())
+                .page(pageable.getPageNumber())
+                .size(pageable.getPageSize())
+                .totalPages(result.getTotalPages())
+                .build();
     }
 }
