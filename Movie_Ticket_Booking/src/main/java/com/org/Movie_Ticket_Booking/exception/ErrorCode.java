@@ -43,7 +43,10 @@ public enum ErrorCode {
     MISSING_DATA_COLUMN(41, "Thiếu dữ liệu tại cột"),
     MOVIE_TITLE_NULL(42, "Tiêu đề phim bị trống"),
     DATE_INVALID(43, "Ngày sai định dạng "),
-    DURATION_INVALID(44, "Thời lượng phải là số nguyên ");
+    DURATION_INVALID(44, "Thời lượng phải là số nguyên "),
+    UPGRADE_EXISTING_PENDING(45, "Bạn đã gửi yêu cầu này và đang chờ duyệt"),
+    UPGRADE_APPROVED(46, "Rạp này của bạn đã được phê duyệt, không thể gửi thêm"),
+    UPGRADE_EXISTING(47, "Rạp này đã được đăng kí, vui lòng điền thông tin khác");
 
     private int code;
     private String massage;
