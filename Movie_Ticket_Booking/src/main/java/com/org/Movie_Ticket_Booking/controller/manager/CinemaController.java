@@ -1,5 +1,7 @@
 package com.org.Movie_Ticket_Booking.controller.manager;
 
+import com.org.Movie_Ticket_Booking.config.CustomUserDetail;
+import com.org.Movie_Ticket_Booking.constants.ViewNames;
 import com.org.Movie_Ticket_Booking.entity.Cinema;
 import com.org.Movie_Ticket_Booking.entity.Room;
 import com.org.Movie_Ticket_Booking.entity.Seat;
@@ -10,6 +12,7 @@ import com.org.Movie_Ticket_Booking.service.CinemaService;
 import com.org.Movie_Ticket_Booking.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -22,8 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 @Controller
-@RequestMapping("/cinema")
-public class CinemaController {
+public class CinemaController extends ManagerController{
 
     private CinemaService cinemaService;
     private RoomService roomService;
@@ -34,16 +36,16 @@ public class CinemaController {
         this.roomService = roomService;}
 
 
-    @GetMapping("/cinemas")
+    @GetMapping("/cinema")
     public String getCinemasForUser(Authentication authentication, Model model) {
-        User user = (User) authentication.getPrincipal();
-        if (user.getRoles().stream()
-                .anyMatch(role -> "CINEMA_MANAGER".equals(role.getName()))) {
+        CustomUserDetail userDetail = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDetail.getUser();
             // chỉ load rạp manager quản lý
             List<Cinema> cinemas = cinemaService.findByManagerId(user.getId());
             model.addAttribute("cinemas", cinemas);
-        }
-        return "CinemaManager/cinema";
+        model.addAttribute("activePage", "cinemas");
+        model.addAttribute("content", ViewNames.MANAGER_CINEMAS);
+        return ViewNames.LAYOUT_MANAGER;
     }
 
     @GetMapping("/{cinemaId}/rooms")

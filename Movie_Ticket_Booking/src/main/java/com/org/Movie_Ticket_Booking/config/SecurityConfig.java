@@ -35,19 +35,19 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
         return email -> userRepository.findByEmail(email)
-                .map(user -> User.withUsername(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities(user.getRoles().stream()
+                .map(user -> new CustomUserDetail(
+                        user,
+                        user.getRoles().stream()
                                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                                 .toList())
-                        .build())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                ).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/bootstrap/**").permitAll()
                         .requestMatchers("/movies/**", "/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/manager/**").hasRole("CINEMA_MANAGER")

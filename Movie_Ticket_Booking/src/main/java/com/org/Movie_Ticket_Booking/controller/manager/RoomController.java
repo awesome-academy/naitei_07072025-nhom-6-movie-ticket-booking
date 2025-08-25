@@ -1,5 +1,6 @@
 package com.org.Movie_Ticket_Booking.controller.manager;
 
+import com.org.Movie_Ticket_Booking.constants.ViewNames;
 import com.org.Movie_Ticket_Booking.entity.Room;
 import com.org.Movie_Ticket_Booking.entity.Seat;
 import com.org.Movie_Ticket_Booking.exception.AppException;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.Set;
 
 @Controller
-@RequestMapping("/room")
-public class RoomController {
+@RequestMapping("/rooms")
+public class RoomController extends ManagerController{
     private RoomService roomService;
 
     @Autowired
@@ -32,6 +33,8 @@ public class RoomController {
         room.getSeats().forEach(seat -> seat.getTypeSeat().getName());
         Set<Seat> seats =room.getSeats();
         model.addAttribute("seats", seats);
-        return "CinemaManager/seats";
+
+        model.addAttribute("content", ViewNames.MANAGER_SEATS);
+        return ViewNames.LAYOUT_MANAGER;
     }
 }
