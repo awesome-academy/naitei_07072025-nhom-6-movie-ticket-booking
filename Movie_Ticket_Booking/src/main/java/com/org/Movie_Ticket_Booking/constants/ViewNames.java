@@ -1,7 +1,6 @@
 package com.org.Movie_Ticket_Booking.constants;
 
 public final class ViewNames {
-    private ViewNames() {};
     public static final String LAYOUT_ADMIN = "Admin/layoutAdmin";
     public static final String CONTENT_MOVIES = "Admin/movies";
     public static final String CONTENT_USERS = "Admin/users";
