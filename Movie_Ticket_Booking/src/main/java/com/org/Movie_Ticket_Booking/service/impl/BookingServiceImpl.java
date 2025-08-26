@@ -1,6 +1,7 @@
 package com.org.Movie_Ticket_Booking.service.impl;
 
 import com.org.Movie_Ticket_Booking.dto.request.BookingRequest;
+import com.org.Movie_Ticket_Booking.dto.respone.BookingHistory;
 import com.org.Movie_Ticket_Booking.dto.respone.BookingResponse;
 import com.org.Movie_Ticket_Booking.entity.*;
 import com.org.Movie_Ticket_Booking.entity.enums.BookingStatus;
@@ -15,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -126,5 +129,17 @@ public class BookingServiceImpl implements BookingService {
                 .showtimeInfo("Start time: " +booking.getShowtime().getStartTime()+"  End time: "+booking.getShowtime().getEndTime())
                 .build();
         return bookingResponse;
+    }
+
+    @Override
+    public List<BookingHistory> findBookingByUserId(Long id) {
+        return this.bookingRepository.findByUserId(id).stream()
+                .map(b-> BookingHistory.builder()
+                        .id(b.getId())
+                        .startTime(b.getShowtime().getStartTime())
+                        .bookingStatus(b.getStatus())
+                        .createdAt(b.getCreatedAt())
+                        .movieName(b.getShowtime().getMovie().getTitle())
+                        .build()).toList();
     }
 }
