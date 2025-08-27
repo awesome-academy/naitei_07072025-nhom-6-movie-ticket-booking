@@ -35,15 +35,15 @@ public enum ErrorCode {
     METHOD_NOTSUPPORT(33, "Không hỗ trợ http method cho endpoint này"),
     INVALID_INPUT(34, "Dữ liệu nhập vào không hợp lệ"),
     INVALID_CREDENTIALS(35, "Tên đăng nhập hoặc mật khẩu không đúng"),
-    FILE_ERROR (36,"Lỗi khi đọc file"),
-    FILE_INVALID(37,"Định dạng file không hợp lệ"),
+    FILE_ERROR(36, "Lỗi khi đọc file"),
+    FILE_INVALID(37, "Định dạng file không hợp lệ"),
     BUSINESS_ERROR(38, "Lỗi nghiệp vụ"),
     FILE_UPLOAD_FAILED(39, "Upload file thất bại. Vui lòng thử lại."),
     INVALID_DATA(40, "Dữ liệu không hợp lệ"),
     MISSING_DATA_COLUMN(41, "Thiếu dữ liệu tại cột"),
     MOVIE_TITLE_NULL(42, "Tiêu đề phim bị trống"),
-    DATE_INVALID(43, "Ngày sai định dạng "),
-    DURATION_INVALID(44, "Thời lượng phải là số nguyên "),
+    DATE_INVALID(43, "Ngày sai định dạng"),
+    DURATION_INVALID(44, "Thời lượng phải là số nguyên"),
     UPGRADE_EXISTING_PENDING(45, "Bạn đã gửi yêu cầu này và đang chờ duyệt"),
     UPGRADE_APPROVED(46, "Rạp này của bạn đã được phê duyệt, không thể gửi thêm"),
     UPGRADE_EXISTING(47, "Rạp này đã được đăng kí, vui lòng điền thông tin khác"),
@@ -59,7 +59,12 @@ public enum ErrorCode {
     REQUEST_NOT_FOUND(57, "Không tìm thấy yêu cầu đăng ký này"),
     ROLE_NOT_FOUND(58, "Không tìm thấy role"),
     INVALID_STATUS(59, "Trạng thái yêu cầu không hợp lệ"),
-    DATABASE_ERROR(60, "Database gặp lỗi");
+    DATABASE_ERROR(60, "Database gặp lỗi"),
+    INVALID_KEY(61, "ID không hợp lệ hoặc không tồn tại"),
+    CINEMA_NOT_FOUND(62, "Không tìm thấy rạp chiếu"),
+    MOVIE_ALREADY_EXISTS_IN_CINEMA(63, "Phim đã tồn tại trong rạp này"),
+    MOVIE_ID_REQUIRED(64, "ID phim không được để trống"),
+    CINEMA_ID_REQUIRED(65, "ID rạp chiếu không được để trống");
 
     private int code;
     private String message;
