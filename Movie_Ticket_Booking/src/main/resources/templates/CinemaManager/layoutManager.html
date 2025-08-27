@@ -16,19 +16,20 @@
 </nav>
 
 <div class="container-fluid" style="padding-left: 0;">
-    <div class="d-flex">
-        <nav id="sidebarMenu"
-             class="col-md-3 col-lg-2 d-md-block sidebar collapse"
-             style="height:100vh; position:fixed; left:0; overflow-y:auto;">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:classappend="${activePage == 'movies'} ? ' active'"
-                           th:href="@{/manager/movies}">
-                            <span th:text="#{menu.manager.movies}"></span>
-                        </a>
-                    </li>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav id="sidebarMenu"
+         class="col-md-3 col-lg-2 d-md-block sidebar collapse"
+         style="height:100vh; position:fixed; left:0; overflow-y:auto;">
+      <div class="position-sticky pt-3 d-flex flex-column" style="height: calc(100vh - 56px);">
+        <ul class="nav flex-column flex-grow-1">
+          <li class="nav-item">
+            <a class="nav-link"
+               th:classappend="${activePage == 'movies'} ? ' active'"
+               th:href="@{/manager/movies}">
+              <span th:text="#{menu.manager.movies}"></span>
+            </a>
+          </li>
 
                     <li class="nav-item">
                         <a class="nav-link"
@@ -62,6 +63,13 @@
                         </a>
                     </li>
                 </ul>
+                <div class="mt-auto mb-3">
+                  <hr class="my-3">
+                    <a class="nav-link fs-5 text-white d-flex align-items-center" href="#" onclick="logout()">
+                      <i class="bi bi-power me-2"></i>
+                        <span th:text="#{logout.logout}"></span>
+                    </a>
+                </div>
             </div>
         </nav>
 
@@ -73,5 +81,35 @@
     </div>
 </div>
 
+<form id="logoutForm" th:action="@{/logout}" method="post"></form>
+
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 text-center">
+        <h5 class="modal-title w-100" id="logoutModalLabel">
+          <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+            <p th:text="#{logout.confirmation}"></p>
+        </h5>
+        <button type="button" class="btn-close position-absolute" style="right: 1rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <span class="mb-0 fs-6"><span th:text="#{logout.message}"></span>
+      </div>
+      <div class="modal-footer border-0 d-flex justify-content-center gap-4">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-1"></i>
+            <span th:text="#{logout.cancel}"></span>
+        </button>
+        <button type="button" class="btn btn-danger px-4" onclick="confirmLogout()">
+          <i class="bi bi-power me-1"></i>
+            <span th:text="#{logout.logout}"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/logout.js}"></script>
 </body>
 </html>

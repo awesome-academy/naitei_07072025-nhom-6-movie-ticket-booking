@@ -1,12 +1,14 @@
 package com.org.Movie_Ticket_Booking.service;
 
 import com.org.Movie_Ticket_Booking.constants.JwtClaims;
+import com.org.Movie_Ticket_Booking.entity.Role;
 import com.org.Movie_Ticket_Booking.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -126,5 +128,8 @@ public class JwtService {
             throw new IllegalStateException("JWT secret length must be at least 32 bytes");
         }
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+    public long getRefreshTokenExpiration() {
+        return refreshTokenExpiration;
     }
 }
