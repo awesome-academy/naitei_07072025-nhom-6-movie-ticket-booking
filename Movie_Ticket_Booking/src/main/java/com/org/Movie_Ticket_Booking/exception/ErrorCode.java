@@ -46,14 +46,23 @@ public enum ErrorCode {
     DURATION_INVALID(44, "Thời lượng phải là số nguyên "),
     UPGRADE_EXISTING_PENDING(45, "Bạn đã gửi yêu cầu này và đang chờ duyệt"),
     UPGRADE_APPROVED(46, "Rạp này của bạn đã được phê duyệt, không thể gửi thêm"),
-    UPGRADE_EXISTING(47, "Rạp này đã được đăng kí, vui lòng điền thông tin khác");
+    UPGRADE_EXISTING(47, "Rạp này đã được đăng kí, vui lòng điền thông tin khác"),
+    AUTH_FAILED(48, "Xác thực không thành công"),
+    ACCESS_DENIED(49, "Từ chối truy cập"),
+    LOGIN_FAILED(50, "Đăng nhập thất bại"),
+    EMAIL_ALREADY_EXISTS(51, "Email đã tồn tại"),
+    USERNAME_ALREADY_EXISTS(52, "Tên đăng nhập đã tồn tại"),
+    PASSWORD_TOO_WEAK(53, "Mật khẩu quá yếu"),
+    RESOURCE_NOT_FOUND(54, "Không tìm thấy tài nguyên"),
+    TOKEN_EXPIRED(55, "Token đã hết hạn"),
+    TOKEN_INVALID(56, "Token không hợp lệ");
 
     private int code;
-    private String massage;
+    private String message;
 
-    ErrorCode(int code, String massage) {
+    ErrorCode(int code, String message) {
         this.code = code;
-        this.massage = massage;
+        this.message = message;
     }
 
     public int getCode() {
@@ -64,11 +73,11 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    public String getMassage() {
-        return massage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMassage(String massage) {
-        this.massage = massage;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
