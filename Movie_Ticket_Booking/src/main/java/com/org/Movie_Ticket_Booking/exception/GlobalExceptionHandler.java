@@ -100,6 +100,7 @@ public class GlobalExceptionHandler {
         }
     }
 
+
     @ExceptionHandler(AuthenticationException.class)
     public Object handleAuthenticationException(AuthenticationException ex, HttpServletRequest request) {
         if (isApiRequest(request)) {
@@ -159,6 +160,31 @@ public class GlobalExceptionHandler {
             return buildApiResponse(ErrorCode.UNIDENTIFIED_ERROR, ErrorCode.UNIDENTIFIED_ERROR.getMessage(), request.getRequestURI());
         } else {
             return buildViewResponse("error", ErrorCode.UNIDENTIFIED_ERROR.getMessage(), request.getRequestURI());
+        }
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Object handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        if (isApiRequest(request)) {
+            return buildApiResponse(ErrorCode.INVALID_STATUS,
+                    ErrorCode.INVALID_STATUS.getMessage(),
+                    request.getRequestURI());
+        } else {
+            return buildViewResponse("error",
+                    ErrorCode.INVALID_STATUS.getMessage(),
+                    request.getRequestURI());
+        }
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    public Object handleDatabaseError(org.springframework.dao.DataAccessException ex, HttpServletRequest request) {
+        if (isApiRequest(request)) {
+            return buildApiResponse(ErrorCode.DATABASE_ERROR,
+                    ErrorCode.DATABASE_ERROR.getMessage(),
+                    request.getRequestURI());
+        } else {
+            return buildViewResponse("error",
+                    ErrorCode.DATABASE_ERROR.getMessage(),
+                    request.getRequestURI());
         }
     }
 }

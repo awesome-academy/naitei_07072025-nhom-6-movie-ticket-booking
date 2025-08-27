@@ -55,7 +55,11 @@ public enum ErrorCode {
     PASSWORD_TOO_WEAK(53, "Mật khẩu quá yếu"),
     RESOURCE_NOT_FOUND(54, "Không tìm thấy tài nguyên"),
     TOKEN_EXPIRED(55, "Token đã hết hạn"),
-    TOKEN_INVALID(56, "Token không hợp lệ");
+    TOKEN_INVALID(56, "Token không hợp lệ"),
+    REQUEST_NOT_FOUND(57, "Không tìm thấy yêu cầu đăng ký này"),
+    ROLE_NOT_FOUND(58, "Không tìm thấy role"),
+    INVALID_STATUS(59, "Trạng thái yêu cầu không hợp lệ"),
+    DATABASE_ERROR(60, "Database gặp lỗi");
 
     private int code;
     private String message;
