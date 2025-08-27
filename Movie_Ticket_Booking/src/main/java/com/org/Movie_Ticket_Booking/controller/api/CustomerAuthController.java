@@ -42,7 +42,7 @@ public class CustomerAuthController {
         try {
             LoginResponse loginResponse = loginService.login(request);
 
-            boolean isCustomer = loginResponse.getRoles().contains(RoleConstants.ROLE_CUSTOMER);
+            boolean isCustomer = loginResponse.getRoles().contains("ROLE_" + RoleConstants.ROLE_CUSTOMER);
             if (!isCustomer) {
                 log.warn("Failed login attempt for username [{}] - reason: ACCESS_DENIED", request.getUsername());
                 throw new AppException(ErrorCode.ACCESS_DENIED);
