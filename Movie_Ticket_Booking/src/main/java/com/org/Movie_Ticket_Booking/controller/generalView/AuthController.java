@@ -20,9 +20,9 @@ public class AuthController {
 
         var authorities = authentication.getAuthorities();
 
-        if (authorities.stream().anyMatch(a -> a.getAuthority().equals(RoleConstants.ROLE_ADMIN))) {
+        if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + RoleConstants.ROLE_ADMIN))) {
             return "redirect:/admin/dashboard";
-        } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals(RoleConstants.ROLE_CINEMA_MANAGER))) {
+        } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + RoleConstants.ROLE_CINEMA_MANAGER))) {
             return "redirect:/manager/dashboard";
         }
 

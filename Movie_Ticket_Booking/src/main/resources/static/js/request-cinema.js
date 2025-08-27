@@ -73,3 +73,58 @@ async function showDetail(id) {
                 `;
         }
 }
+
+async function approve(id) {
+        const token = document.querySelector("meta[name='_csrf']").content;
+        const header = document.querySelector("meta[name='_csrf_header']").content;
+
+        try {
+                const response = await fetch(`/admin/request_cinemas/${id}/approve`, {
+                        method: "PUT",
+                        headers: {
+                                "Content-Type": "application/json",
+                                [header]: token
+                        }
+                });
+
+                if (!response.ok) {
+                        // đọc lỗi từ response body nếu có
+                        const errorText = await response.text();
+                        throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                alert("Đã phê duyệt thành công!");
+                location.reload();
+
+        } catch (err) {
+                console.error("Approve error:", err);
+                alert("Có lỗi xảy ra khi phê duyệt: " + err.message);
+        }
+}
+
+async function reject(id) {
+        const token = document.querySelector("meta[name='_csrf']").content;
+        const header = document.querySelector("meta[name='_csrf_header']").content;
+
+        try {
+                const response = await fetch(`/admin/request_cinemas/${id}/reject`, {
+                        method: "PUT",
+                        headers: {
+                                "Content-Type": "application/json",
+                                [header]: token
+                        }
+                });
+
+                if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || `HTTP ${response.status}`);
+                }
+
+                alert("Đã từ chối thành công!");
+                location.reload();
+
+        } catch (err) {
+                console.error("Reject error:", err);
+                alert("Có lỗi xảy ra khi từ chối: " + err.message);
+        }
+}
