@@ -92,12 +92,27 @@ public class JwtService {
 
     public String getEmailFromToken(String token) {
         try {
-            if (token == null || token.isEmpty()) return null;
-            Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+            if (token == null || token.isEmpty()) {
+                throw new IllegalArgumentException("JWT token is null or empty");
+            }
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
             return claims.getSubject();
+        } catch (io.jsonwebtoken.security.SignatureException e) {
+            log.error("JWT signature does not match: ", e);
+            throw new io.jsonwebtoken.security.SignatureException("JWT signature does not match locally computed signature", e);
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            log.error("JWT token has expired: ", e);
+            throw new io.jsonwebtoken.ExpiredJwtException(null, null, "JWT token has expired", e);
+        } catch (io.jsonwebtoken.MalformedJwtException e) {
+            log.error("JWT token is malformed: ", e);
+            throw new io.jsonwebtoken.MalformedJwtException("JWT token is malformed", e);
         } catch (JwtException | IllegalArgumentException e) {
             log.error("Cannot parse JWT to get email: ", e);
-            return null;
+            throw new IllegalArgumentException("Invalid JWT token", e);
         }
     }
 
