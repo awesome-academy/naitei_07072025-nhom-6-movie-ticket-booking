@@ -16,6 +16,7 @@ public interface MovieMapper {
     @Mapping(target = "genres", ignore = true)
     Movie toEntity (MovieRequest dto);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(target = "genres", source = "genres")
     MovieResponse toMovieRespone (Movie movie);
     default List<String> mapGenres(Set<Genre> genres) {
