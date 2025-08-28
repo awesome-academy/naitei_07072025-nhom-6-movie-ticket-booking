@@ -2,6 +2,8 @@ package com.org.Movie_Ticket_Booking.service.impl;
 
 import com.org.Movie_Ticket_Booking.dto.request.MovieRequest;
 import com.org.Movie_Ticket_Booking.dto.respone.MovieResponse;
+import com.org.Movie_Ticket_Booking.dto.respone.MovieListItemResponse;
+import com.org.Movie_Ticket_Booking.dto.respone.PagedMoviesResponse;
 import com.org.Movie_Ticket_Booking.entity.Genre;
 import com.org.Movie_Ticket_Booking.entity.Movie;
 import com.org.Movie_Ticket_Booking.exception.AppException;
@@ -11,6 +13,8 @@ import com.org.Movie_Ticket_Booking.repository.GenreRepository;
 import com.org.Movie_Ticket_Booking.repository.MovieRepository;
 import com.org.Movie_Ticket_Booking.service.MovieService;
 import com.org.Movie_Ticket_Booking.utils.FileReader;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 @Service
 @RequiredArgsConstructor
@@ -174,5 +181,137 @@ public class MovieServiceImpl implements MovieService {
     private void clearImportSession(HttpSession session) {
         session.removeAttribute("newMovies");
         session.removeAttribute("duplicateMovies");
+    }
+
+
+    //  Search movie
+    @Override
+    public PagedMoviesResponse searchMovies(
+            String title,
+            List<String> genres,
+            String dateFrom,
+            String dateTo,
+            String startTime,
+            String endTime,
+            String language,
+            int page,
+            int size
+    ) {
+
+        // Validate search parameters
+        validateSearchParams(dateFrom, dateTo, startTime, endTime);
+
+        Specification<Movie> spec = Specification.allOf();
+
+        // Title fuzzy search
+        if (title != null && !title.isBlank()) {
+            final String like = "%" + title.trim().toLowerCase() + "%";
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("title")), like)
+            );
+        }
+
+        // Language filter
+        if (language != null && !language.isBlank()) {
+            final String finalLanguage = language.trim().toLowerCase();
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(cb.lower(root.get("language")), finalLanguage)
+            );
+        }
+
+        // Genre filter
+        if (genres != null && !genres.isEmpty()) {
+            final List<String> loweredGenres = genres.stream()
+                    .filter(s -> s != null && !s.isBlank())
+                    .map(s -> s.trim().toLowerCase())
+                    .toList();
+            spec = spec.and((root, query, cb) -> {
+                var join = root.join("genres");
+                query.distinct(true);
+                return cb.lower(join.get("name")).in(loweredGenres);
+            });
+        }
+
+        // Date filter with validation
+        LocalDate from = null;
+        LocalDate to = null;
+        try {
+            if (dateFrom != null && !dateFrom.isBlank()) from = LocalDate.parse(dateFrom);
+            if (dateTo != null && !dateTo.isBlank()) to = LocalDate.parse(dateTo);
+        } catch (DateTimeParseException e) {
+            throw new AppException(ErrorCode.DATE_INVALID);
+        }
+
+        if (from != null || to != null) {
+            final LocalDate finalFrom = from;
+            final LocalDate finalTo = to;
+            spec = spec.and((root, query, cb) -> {
+                var stJoin = root.join("showtimes");
+                query.distinct(true);
+                if (finalFrom != null && finalTo != null) return cb.between(stJoin.get("date"), finalFrom, finalTo);
+                else if (finalFrom != null) return cb.greaterThanOrEqualTo(stJoin.get("date"), finalFrom);
+                else return cb.lessThanOrEqualTo(stJoin.get("date"), finalTo);
+            });
+        }
+
+        // Time filter with validation
+        LocalTime start = null;
+        LocalTime end = null;
+        try {
+            if (startTime != null && !startTime.isBlank()) start = LocalTime.parse(startTime);
+            if (endTime != null && !endTime.isBlank()) end = LocalTime.parse(endTime);
+        } catch (DateTimeParseException e) {
+            throw new AppException(ErrorCode.TIME_INVALID);
+        }
+
+        if (start != null || end != null) {
+            final LocalTime finalStart = start;
+            final LocalTime finalEnd = end;
+            spec = spec.and((root, query, cb) -> {
+                var stJoin = root.join("showtimes");
+                query.distinct(true);
+                if (finalStart != null && finalEnd != null) return cb.between(stJoin.get("startTime"), finalStart, finalEnd);
+                else if (finalStart != null) return cb.greaterThanOrEqualTo(stJoin.get("startTime"), finalStart);
+                else return cb.lessThanOrEqualTo(stJoin.get("startTime"), finalEnd);
+            });
+        }
+
+        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1),
+                Sort.by(Sort.Direction.DESC, "releaseDate"));
+
+        Page<Movie> result = movieRepository.findAll(spec, pageable);
+
+        List<MovieListItemResponse> items = result.getContent().stream()
+                .map(movieMapper::toListItem)
+                .toList();
+
+        return PagedMoviesResponse.builder()
+                .items(items)
+                .total(result.getTotalElements())
+                .page(pageable.getPageNumber())
+                .size(pageable.getPageSize())
+                .totalPages(result.getTotalPages())
+                .build();
+    }
+
+    /**
+     * Validate search parameters format
+     */
+    private void validateSearchParams(String dateFrom, String dateTo, String startTime, String endTime) {
+        // Validate date format
+        if (dateFrom != null && !dateFrom.isBlank() && !dateFrom.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            throw new AppException(ErrorCode.DATE_INVALID);
+        }
+        if (dateTo != null && !dateTo.isBlank() && !dateTo.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            throw new AppException(ErrorCode.DATE_INVALID);
+        }
+
+        // Validate time format
+        if (startTime != null && !startTime.isBlank() && !startTime.matches("\\d{2}:\\d{2}(:\\d{2})?")) {
+            throw new AppException(ErrorCode.TIME_INVALID);
+        }
+        if (endTime != null && !endTime.isBlank() && !endTime.matches("\\d{2}:\\d{2}(:\\d{2})?")) {
+            throw new AppException(ErrorCode.TIME_INVALID);
+        }
     }
 }

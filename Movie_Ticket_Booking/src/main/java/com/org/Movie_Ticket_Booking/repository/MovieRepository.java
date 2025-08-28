@@ -1,18 +1,20 @@
 package com.org.Movie_Ticket_Booking.repository;
 
 import com.org.Movie_Ticket_Booking.entity.Movie;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
-public interface MovieRepository extends JpaRepository<Movie, Long> {
+@Repository
+public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecificationExecutor<Movie> {
 
     // Lấy danh sách phim theo rạp - phân trang
     Page<Movie> findByCinemas_Id(Long cinemaId, Pageable pageable);
@@ -25,9 +27,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     boolean existsByCinemas_IdAndId(Long cinemaId, Long movieId);
 
     // Tìm movie theo title và releaseDate
-    Optional<Movie> findByTitleAndReleaseDate(@NotBlank(message = "Tiêu đề phim không được để trống") String title, LocalDate releaseDate);
+    Optional<Movie> findByTitleAndReleaseDate(String title, LocalDate releaseDate);
 
     // Lấy ID của movies theo cinema
     Set<Long> findIdsByCinemas_Id(Long cinemaId);
-
 }
