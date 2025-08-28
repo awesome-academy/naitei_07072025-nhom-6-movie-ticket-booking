@@ -64,7 +64,10 @@ public enum ErrorCode {
     CINEMA_NOT_FOUND(62, "Không tìm thấy rạp chiếu"),
     MOVIE_ALREADY_EXISTS_IN_CINEMA(63, "Phim đã tồn tại trong rạp này"),
     MOVIE_ID_REQUIRED(64, "ID phim không được để trống"),
-    CINEMA_ID_REQUIRED(65, "ID rạp chiếu không được để trống");
+    CINEMA_ID_REQUIRED(65, "ID rạp chiếu không được để trống"),
+    LOGOUT_FAILED(66, "Đăng xuất thất bại"),
+    UNAUTHORIZED(67, "Không có quyền truy cập"),
+    LOGOUT_ALREADY_DONE(68, "Người dùng đã đăng xuất rồi");
 
     private int code;
     private String message;

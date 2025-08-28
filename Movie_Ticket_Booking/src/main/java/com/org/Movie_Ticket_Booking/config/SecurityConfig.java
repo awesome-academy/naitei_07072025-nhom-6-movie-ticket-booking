@@ -59,8 +59,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/customer/**").hasRole(RoleConstants.ROLE_CUSTOMER)
+                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/logout").hasRole(RoleConstants.ROLE_CUSTOMER)
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -90,10 +90,12 @@ public class SecurityConfig {
                                         response.sendRedirect("/login?error=true");
                                     }
                                 })
-                ).logout(logout -> logout
-                        .logoutUrl(loginUrl)
-                        .logoutSuccessUrl(dashboard)
-                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl(logoutUrl)
+                        .logoutSuccessUrl(loginUrl)
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                 );
         return http.build();
     }

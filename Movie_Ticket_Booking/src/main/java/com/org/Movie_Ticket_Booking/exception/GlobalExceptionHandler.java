@@ -43,6 +43,8 @@ public class GlobalExceptionHandler {
         ERROR_CODE_STATUS_MAP.put(ErrorCode.TOKEN_INVALID, HttpStatus.UNAUTHORIZED);
         ERROR_CODE_STATUS_MAP.put(ErrorCode.FILE_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         ERROR_CODE_STATUS_MAP.put(ErrorCode.FILE_UPLOAD_FAILED, HttpStatus.INTERNAL_SERVER_ERROR);
+        ERROR_CODE_STATUS_MAP.put(ErrorCode.LOGOUT_ALREADY_DONE, HttpStatus.BAD_REQUEST);
+        ERROR_CODE_STATUS_MAP.put(ErrorCode.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
 
 
