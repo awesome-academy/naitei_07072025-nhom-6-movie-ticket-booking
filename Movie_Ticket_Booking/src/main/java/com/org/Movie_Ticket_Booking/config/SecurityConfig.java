@@ -5,6 +5,7 @@ import com.org.Movie_Ticket_Booking.exception.AppException;
 import com.org.Movie_Ticket_Booking.exception.ErrorCode;
 import com.org.Movie_Ticket_Booking.repository.UserRepository;
 import com.org.Movie_Ticket_Booking.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -34,6 +37,8 @@ public class SecurityConfig {
     private String dashboard;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationEntryPoint restAuthenticationEntryPoint;
+    private final AccessDeniedHandler restAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -62,6 +67,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/logout").hasRole(RoleConstants.ROLE_CUSTOMER)
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(restAuthenticationEntryPoint)
+                        .accessDeniedHandler(restAccessDeniedHandler)
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

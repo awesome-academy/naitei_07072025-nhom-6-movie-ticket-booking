@@ -1,6 +1,9 @@
 package com.org.Movie_Ticket_Booking.security;
 
 import com.org.Movie_Ticket_Booking.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,27 +42,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String jwt = extractToken(authHeader);
         if (jwt == null) {
-            filterChain.doFilter(request, response);
+            unauthorized(response, "Invalid JWT format");
             return;
         }
 
         try {
             final String userEmail = jwtService.getEmailFromToken(jwt);
 
-            // Nếu không có email hoặc đã có Authentication thì bỏ qua
-            if (userEmail == null || SecurityContextHolder.getContext().getAuthentication() != null) {
+            if (userEmail == null) {
+                unauthorized(response, "JWT missing email");
+                return;
+            }
+
+            if (SecurityContextHolder.getContext().getAuthentication() != null) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // Validate token
             if (!jwtService.validateToken(jwt, userEmail)) {
-                unauthorized(response, "Invalid JWT token");
+                unauthorized(response, "Invalid or expired JWT token");
                 return;
             }
 
             Set<String> roles = jwtService.getRolesFromToken(jwt);
-            Set<SimpleGrantedAuthority> authorities = (roles == null ? Collections.<String>emptySet() : roles)
+            Set<SimpleGrantedAuthority> authorities = (roles == null ? Set.<String>of() : roles)
                     .stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
@@ -71,9 +76,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
+        } catch (SignatureException e) {
+            handleJwtException(response, "JWT signature does not match", e);
+            return;
+        } catch (ExpiredJwtException e) {
+            handleJwtException(response, "JWT token has expired", e);
+            return;
+        } catch (MalformedJwtException e) {
+            handleJwtException(response, "JWT token is malformed", e);
+            return;
         } catch (Exception e) {
-            log.error("Cannot set user authentication: ", e);
-            unauthorized(response, "Authentication failed");
+            handleJwtException(response, "Authentication failed", e);
             return;
         }
 
@@ -97,5 +110,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write("{\"error\": \"" + message + "\"}");
+    }
+
+    private void handleJwtException(HttpServletResponse response, String message, Exception e) throws IOException {
+        log.error(message, e);
+        unauthorized(response, message);
     }
 }
