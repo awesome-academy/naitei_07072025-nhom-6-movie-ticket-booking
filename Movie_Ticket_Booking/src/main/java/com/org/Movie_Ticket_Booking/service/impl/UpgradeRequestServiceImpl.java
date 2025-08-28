@@ -2,14 +2,19 @@ package com.org.Movie_Ticket_Booking.service.impl;
 
 import com.org.Movie_Ticket_Booking.dto.request.UpgradeRqDTO;
 import com.org.Movie_Ticket_Booking.dto.respone.UpgradeRqResponse;
+import com.org.Movie_Ticket_Booking.entity.Cinema;
+import com.org.Movie_Ticket_Booking.entity.Role;
 import com.org.Movie_Ticket_Booking.entity.UpgradeRequest;
 import com.org.Movie_Ticket_Booking.entity.User;
 import com.org.Movie_Ticket_Booking.entity.enums.UpgradeRequestStatus;
 import com.org.Movie_Ticket_Booking.exception.AppException;
 import com.org.Movie_Ticket_Booking.exception.ErrorCode;
 import com.org.Movie_Ticket_Booking.mapper.UpgradeRequestMapper;
+import com.org.Movie_Ticket_Booking.repository.CinemaRepository;
+import com.org.Movie_Ticket_Booking.repository.RoleRepository;
 import com.org.Movie_Ticket_Booking.repository.UpgradeRequestRepository;
 import com.org.Movie_Ticket_Booking.repository.UserRepository;
+import com.org.Movie_Ticket_Booking.service.NotificationService;
 import com.org.Movie_Ticket_Booking.service.UpgradeRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,14 +23,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UpgradeRequestServiceImpl implements UpgradeRequestService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final UpgradeRequestRepository upgradeRequestRepository;
+    private final CinemaRepository cinemaRepository;
     private final UpgradeRequestMapper upgradeRequestMapper;
+    private final NotificationService notificationService;
+    private final String MANAGER ="ROLE_MANAGER";
+    private final String METHOD_SYSTEM = "SYSTEM";
 
     @Override
     public UpgradeRqResponse createUpgradeRequest(UpgradeRqDTO upgradeRqDTO) {
@@ -60,6 +71,60 @@ public class UpgradeRequestServiceImpl implements UpgradeRequestService {
     public UpgradeRqResponse getDetailByID(Long id) {
         getRequest(id);
         return upgradeRequestRepository.findDetailById(id);
+    }
+
+    @Transactional
+    @Override
+    public void approve(Long id, Locale locale) {
+        UpgradeRequest upgradeRequest = getRequest(id);
+
+        if (upgradeRequest.getStatus() != UpgradeRequestStatus.PENDING) {
+            throw new AppException(ErrorCode.INVALID_STATUS);
+        }
+
+        upgradeRequest.setStatus(UpgradeRequestStatus.APPROVED);
+
+        User user = upgradeRequest.getUser();
+
+        Role managerRole = roleRepository.findByName(MANAGER)
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        user.getRoles().add(managerRole);
+
+        Cinema cinema = Cinema.builder()
+                .name(upgradeRequest.getCinemaName())
+                .address(upgradeRequest.getAddress())
+                .description(upgradeRequest.getDescription())
+                .manager(user)
+                .build();
+
+        cinemaRepository.save(cinema);
+        upgradeRequestRepository.save(upgradeRequest);
+        notificationService.saveNoti( user,
+                "notification.upgrade.approved",
+                new Object[] {upgradeRequest.getCinemaName()},
+                METHOD_SYSTEM,
+                locale);
+    }
+
+    @Transactional
+    @Override
+    public void reject(Long id, Locale locale) {
+        UpgradeRequest upgradeRequest = getRequest(id);
+
+        if (upgradeRequest.getStatus() != UpgradeRequestStatus.PENDING) {
+            throw new AppException(ErrorCode.INVALID_STATUS);
+        }
+
+        upgradeRequest.setStatus(UpgradeRequestStatus.REJECTED);
+        upgradeRequestRepository.save(upgradeRequest);
+
+        notificationService.saveNoti(
+                upgradeRequest.getUser(),
+                "notification.upgrade.rejected",
+                new Object[]{upgradeRequest.getCinemaName()},
+                METHOD_SYSTEM,
+                locale
+        );
     }
 
     private User getUser(Long userID){
