@@ -27,4 +27,9 @@ public class CinemaServiceImpl implements CinemaService {
     public List<Cinema> findByManagerId(Long id) {
         return this.cinemaRepository.findByManagerId(id);
     }
+
+    @Override
+    public List<Cinema> getCinemasByManager(Long managerId) {
+        return cinemaRepository.findByManagerId(managerId);
+    }
 }
