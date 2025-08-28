@@ -69,8 +69,8 @@ public enum ErrorCode {
     UNAUTHORIZED(67, "Không có quyền truy cập"),
     LOGOUT_ALREADY_DONE(68, "Người dùng đã đăng xuất rồi"),
     REVIEW_NOT_FOUND(69, "Không tìm thấy đánh giá"),
-    INVALID_ARGUMENT(70, "Tham số truyền không hợp lệ");
-
+    INVALID_ARGUMENT(70, "Tham số truyền không hợp lệ"),
+    TIME_INVALID(71, "Thời gian phải có định dạng HH:mm hoặc HH:mm:ss");
 
     private int code;
     private String message;
