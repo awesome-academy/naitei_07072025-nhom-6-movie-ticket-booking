@@ -13,6 +13,8 @@ import com.org.Movie_Ticket_Booking.service.MovieService;
 import com.org.Movie_Ticket_Booking.utils.FileReader;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -89,6 +91,22 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public void cancelImport(HttpSession session) {
         clearImportSession(session);
+    }
+
+    @Transactional
+    @Override
+    public Page<MovieResponse> getListMovies(Pageable pageable) {
+        Page<Movie> movies = movieRepository.findAll(pageable);
+        return movieRepository.findAll(pageable)
+                .map(movieMapper::toMovieRespone);
+    }
+
+    @Transactional
+    @Override
+    public MovieResponse getMovieDetail(Long id) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MOVIE_NOT_FOUND));
+        return movieMapper.toMovieRespone(movie);
     }
 
     private Set<Genre> resolveGenres(String genresString) {

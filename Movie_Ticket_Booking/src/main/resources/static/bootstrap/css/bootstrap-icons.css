@@ -25,3 +25,6 @@
 .bi-gear::before { content: "\f3e5"; }
 .bi-eye::before { content: "\f33e"; }
 .bi-eye-fill::before { content: "\f33f"; }
+.bi-pencil-square::before {content: "\f4ca";}
+.bi-trash::before {content: "\f5de";}
+.bi-star-fill::before {content: "\f586";}

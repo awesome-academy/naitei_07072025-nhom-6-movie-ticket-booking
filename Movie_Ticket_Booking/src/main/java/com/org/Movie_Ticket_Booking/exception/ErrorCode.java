@@ -67,7 +67,10 @@ public enum ErrorCode {
     CINEMA_ID_REQUIRED(65, "ID rạp chiếu không được để trống"),
     LOGOUT_FAILED(66, "Đăng xuất thất bại"),
     UNAUTHORIZED(67, "Không có quyền truy cập"),
-    LOGOUT_ALREADY_DONE(68, "Người dùng đã đăng xuất rồi");
+    LOGOUT_ALREADY_DONE(68, "Người dùng đã đăng xuất rồi"),
+    REVIEW_NOT_FOUND(69, "Không tìm thấy đánh giá"),
+    INVALID_ARGUMENT(70, "Tham số truyền không hợp lệ");
+
 
     private int code;
     private String message;

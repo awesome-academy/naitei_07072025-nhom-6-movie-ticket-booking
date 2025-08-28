@@ -11,6 +11,7 @@ public final class ViewNames {
     public static final String CONTENT_ACCOUNT = "Admin/account";
     public static final String CONTENT_DASHBOARD = "Admin/dashboard";
     public static final String CONFIRM_IMPORT_MOVIE = "Admin/movies/confirm-import";
+    public static final String CONTENT_MOVIE_DETAIL = "Admin/movies/movie-detail.html";
 
     //  Cinema Manager
     public static final String LAYOUT_MANAGER = "CinemaManager/layoutManager";

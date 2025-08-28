@@ -59,3 +59,30 @@
 .main_content {
     margin-top: 32px;
 }
+
+#importFileBox {
+    margin-bottom: 24px;
+}
+
+.table td {
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: 200px;
+}
+
+.table td img {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+.fs-7 {
+    font-size: 0.65rem;
+}
+
+#review-item,
+#review-comment{
+    margin: 24px 0;
+}
