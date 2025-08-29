@@ -35,7 +35,7 @@ public class UpgradeRequestServiceImpl implements UpgradeRequestService {
     private final CinemaRepository cinemaRepository;
     private final UpgradeRequestMapper upgradeRequestMapper;
     private final NotificationService notificationService;
-    private final String MANAGER ="ROLE_MANAGER";
+    private final String MANAGER ="ROLE_CINEMA_MANAGER";
     private final String METHOD_SYSTEM = "SYSTEM";
 
     @Override
