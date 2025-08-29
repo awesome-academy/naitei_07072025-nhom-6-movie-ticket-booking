@@ -9,4 +9,5 @@ public interface CinemaService {
     public List<Cinema> getCinamaByAddress(String address);
 
     List<Cinema> findByManagerId(Long id);
+    List<Cinema> getCinemasByManager(Long managerId);
 }

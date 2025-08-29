@@ -1,6 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<body>
 <div th:fragment="content">
-  <h2 th:text="#{manager.statistics.title}">Thống kê & báo cáo</h2>
-  <p th:text="#{manager.statistics.desc}">
-    Báo cáo doanh thu, suất chiếu.
-  </p>
+
+  <!-- Include CSS -->
+  <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+  <link th:href="@{/bootstrap/css/bootstrap-icons.css}" rel="stylesheet"/>
+  <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+  <link th:href="@{/css/statistics.css}" rel="stylesheet"/>
+
+  <!-- Include Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Thống kê & Báo cáo Doanh thu</h1>
+    <div class="text-muted">
+      <i class="bi bi-calendar-date"></i>
+      <span id="currentDate"></span>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="row">
+      <div class="col-md-3">
+        <label for="startDate" class="form-label">Từ ngày:</label>
+        <input type="date" class="form-control" id="startDate" th:value="${startDate}">
+      </div>
+      <div class="col-md-3">
+        <label for="endDate" class="form-label">Đến ngày:</label>
+        <input type="date" class="form-control" id="endDate" th:value="${endDate}">
+      </div>
+      <div class="col-md-2">
+        <label for="cinemaSelect" class="form-label">Chọn rạp:</label>
+        <div class="position-relative">
+          <select id="cinemaSelect" name="cinemaId" class="form-control">
+            <option value="">Tất cả các rạp</option>
+            <th:block th:each="cinema : ${cinemas}">
+              <option th:value="${cinema.id}" th:text="${cinema.name}"></option>
+            </th:block>
+          </select>
+
+          <!-- icon mũi tên -->
+          <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-3"></i>
+        </div>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-primary w-100" onclick="updateStatistics()">
+          <i class="bi bi-search"></i> Cập nhật
+        </button>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-success w-100" onclick="exportData()">
+          <i class="bi bi-download"></i> Xuất Excel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards Row -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="stats-card text-center">
+        <div class="stat-number" id="totalRevenue">0 VNĐ</div>
+        <div class="stat-label">Tổng doanh thu</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card text-center">
+        <div class="stat-number" id="totalTickets">0</div>
+        <div class="stat-label">Tổng vé bán</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card text-center">
+        <div class="stat-number" id="totalMovies">0</div>
+        <div class="stat-label">Số phim</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card text-center">
+        <div class="stat-number" id="avgTicketPrice">0 VNĐ</div>
+        <div class="stat-label">Giá vé trung bình</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movie Statistics -->
+  <div class="stats-card">
+    <div class="stats-header">
+      <h4><i class="bi bi-film"></i> Thống kê theo Phim</h4>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="chart-container">
+          <canvas id="movieChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead>
+            <tr>
+              <th>Phim</th>
+              <th>Vé bán</th>
+              <th>Doanh thu</th>
+            </tr>
+            </thead>
+            <tbody id="movieTableBody">
+            <tr>
+              <td colspan="3" class="loading">Đang tải...</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time Slot Statistics -->
+  <div class="stats-card">
+    <div class="stats-header">
+      <h4><i class="bi bi-clock"></i> Thống kê theo Khung giờ</h4>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <h6>Tỷ lệ đặt vé theo khung giờ</h6>
+        <div class="chart-container">
+          <canvas id="bookingTimeChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h6>Tỷ lệ doanh thu theo khung giờ</h6>
+        <div class="chart-container">
+          <canvas id="revenueTimeChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="mt-3">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th>Khung giờ</th>
+          <th>Số lượt đặt</th>
+          <th>Tỷ lệ đặt vé (%)</th>
+          <th>Doanh thu</th>
+          <th>Tỷ lệ doanh thu (%)</th>
+        </tr>
+        </thead>
+        <tbody id="timeSlotTableBody">
+        <tr>
+          <td colspan="5" class="loading">Đang tải...</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Revenue Trend -->
+  <div class="stats-card">
+    <div class="stats-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h4><i class="bi bi-graph-up"></i> Xu hướng Doanh thu</h4>
+        <div class="btn-group" role="group">
+          <input type="radio" class="btn-check" name="periodOptions" id="dayPeriod" value="day" checked>
+          <label class="btn btn-outline-primary btn-sm" for="dayPeriod">Ngày</label>
+
+          <input type="radio" class="btn-check" name="periodOptions" id="monthPeriod" value="month">
+          <label class="btn btn-outline-primary btn-sm" for="monthPeriod">Tháng</label>
+
+          <input type="radio" class="btn-check" name="periodOptions" id="yearPeriod" value="year">
+          <label class="btn btn-outline-primary btn-sm" for="yearPeriod">Năm</label>
+        </div>
+      </div>
+    </div>
+    <div class="chart-container">
+      <canvas id="revenueChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Include JavaScript -->
+  <script th:src="@{/js/statistics.js}"></script>
 </div>
+</body>
+</html>
