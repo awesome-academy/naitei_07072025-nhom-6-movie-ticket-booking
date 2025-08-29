@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 @Controller
-@RequestMapping("/manager/movies")
+//@RequestMapping("/movies")
 @RequiredArgsConstructor
 public class MoviesController extends ManagerController {
 
     private final CinemaMovieService cinemaMovieService;
 
     // Hiển thị danh sách phim theo rạp + filter + phân trang
-    @GetMapping("/{cinemaId}")
+    @GetMapping("/movies/{cinemaId}")
     public String listMovies(@PathVariable Long cinemaId,
                              @RequestParam(defaultValue = "all") String filter,
                              @PageableDefault(size = 8) Pageable pageable,
@@ -46,7 +46,7 @@ public class MoviesController extends ManagerController {
         return ViewNames.LAYOUT_MANAGER;
     }
 
-    @GetMapping
+    @GetMapping("/movies")
     public String listMoviesDefault(@RequestParam(defaultValue = "all") String filter,
                                     @PageableDefault(size = 8) Pageable pageable,
                                     Model model) {
@@ -70,7 +70,7 @@ public class MoviesController extends ManagerController {
 
 
     // Thêm phim vào rạp
-    @PostMapping("/add")
+    @PostMapping("/movies/add")
     public String addMovie(@RequestParam Long cinemaId,
                            @RequestParam Long movieId) {
         cinemaMovieService.addMovieToCinema(cinemaId, movieId);

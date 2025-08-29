@@ -9,7 +9,7 @@
     <div class="error-title" th:text="#{error.heading}">Đã xảy ra lỗi</div>
     <div class="error-message" th:text="${message}">Thông báo lỗi</div>
     <div class="error-path" th:text="#{error.path} + ': ' + ${path}">Đường dẫn: /path</div>
-    <a class="back-link" th:href="@{/admin/dashboard}" th:text="#{error.backLink}">Quay lại trang quản trị</a>
+    <button type="button" onclick="history.back()">Quay lại trang trước</button>
 </div>
 </body>
 </html>

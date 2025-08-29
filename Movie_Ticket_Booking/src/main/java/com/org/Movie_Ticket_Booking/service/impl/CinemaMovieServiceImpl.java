@@ -34,20 +34,24 @@ public class CinemaMovieServiceImpl implements CinemaMovieService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Movie> getMoviesForCinema(Long cinemaId, String filter, Pageable pageable) {
+        Page<Movie> movies;
+
         if (cinemaId == null) {
-            return Page.empty(pageable);
+            movies = Page.empty(pageable);
+        } else if (filter == null || filter.trim().isEmpty()) {
+            movies = movieRepository.findAll(pageable);
+        } else {
+            movies = switch (filter.toLowerCase()) {
+                case "selected" -> movieRepository.findByCinemas_Id(cinemaId, pageable);
+                case "unselected" -> movieRepository.findAllNotInCinema(cinemaId, pageable);
+                default -> movieRepository.findAll(pageable);
+            };
         }
 
-        if (filter == null || filter.trim().isEmpty()) {
-            return movieRepository.findAll(pageable);
-        }
-
-        return switch (filter.toLowerCase()) {
-            case "selected" -> movieRepository.findByCinemas_Id(cinemaId, pageable);
-            case "unselected" -> movieRepository.findAllNotInCinema(cinemaId, pageable);
-            default -> movieRepository.findAll(pageable);
-        };
+        movies.forEach(m -> m.getGenres().size()); //fix tạm. dễ dính N+1
+        return movies;
     }
 
     /** Tập id phim đã thuộc rạp */

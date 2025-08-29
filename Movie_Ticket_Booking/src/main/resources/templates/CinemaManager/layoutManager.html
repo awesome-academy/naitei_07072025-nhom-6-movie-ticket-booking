@@ -7,6 +7,7 @@
     <link th:href="@{/bootstrap/css/bootstrap-icons.css}" rel="stylesheet"/>
     <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
     <link th:href="@{/css/manager_dashboard.css}" rel="stylesheet"/>
+    <link th:href="@{/css/movies.css}" rel="stylesheet"/>
 </head>
 
 <body>
@@ -16,7 +17,7 @@
 </nav>
 
 <div class="container-fluid" style="padding-left: 0;">
-  <div class="d-flex">
+  <div class="d-flex" style="height: 100vh;">
     <!-- Sidebar -->
     <nav id="sidebarMenu"
          class="col-md-3 col-lg-2 d-md-block sidebar collapse"
@@ -73,11 +74,9 @@
             </div>
         </nav>
 
-        <div style="margin-left: 18%; margin-top: 32px;">
-            <main class="flex-grow-1 ms-sm-auto px-md-4"
-                  th:replace="${content}">
-            </main>
-        </div>
+      <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main_content" style="margin-bottom: 24px; margin-top: 24px">
+          <main class="flex-grow-1 ms-sm-auto px-md-4" th:replace="${content}"></main>
+      </div>
     </div>
 </div>
 
@@ -94,7 +93,7 @@
         <button type="button" class="btn-close position-absolute" style="right: 1rem;" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-center py-4">
-        <span class="mb-0 fs-6"><span th:text="#{logout.message}"></span>
+        <span class="mb-0 fs-6"><span th:text="#{logout.message}"></span></span>
       </div>
       <div class="modal-footer border-0 d-flex justify-content-center gap-4">
         <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
